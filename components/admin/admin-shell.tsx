@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "@/components/admin/logout-button";
 
@@ -19,10 +22,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <div className="relative mx-auto max-w-7xl px-6 py-8 md:px-8">
         <header className="mb-8 flex flex-col gap-4 rounded-2xl border border-white/10 bg-black/40 p-5 backdrop-blur-lg md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="font-mono text-xs uppercase tracking-widest text-bitcoin">Admin Console</p>
-            <h1 className="mt-1 font-heading text-2xl font-bold text-white">Online Record 控制台</h1>
+            <p className="font-mono text-[11px] uppercase tracking-widest text-bitcoin">Admin Console</p>
+            <h1 className="mt-1 font-heading text-xl font-bold text-white md:text-2xl">Online Record 控制台</h1>
           </div>
           <nav className="flex flex-wrap items-center gap-2" aria-label="后台导航">
+            <Link href="/" className={cn(navClass, "border border-bitcoin/30 bg-bitcoin/10 text-bitcoin hover:bg-bitcoin/15")}>
+              <Home className="h-4 w-4" aria-hidden />
+              返回首页
+            </Link>
             {navItems.map((item) => (
               <Link key={item.href} href={item.href} className={navClass}>
                 {item.label}
