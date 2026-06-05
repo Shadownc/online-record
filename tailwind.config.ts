@@ -9,14 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        void: "#030304",
-        surface: "#0F1115",
-        foreground: "#FFFFFF",
+        void: "#02040A",
+        surface: "#07111F",
+        foreground: "#F8FBFF",
         stardust: "#94A3B8",
-        boundary: "#1E293B",
-        bitcoin: "#F7931A",
-        burnt: "#EA580C",
-        gold: "#FFD600",
+        boundary: "#1E3A5F",
+        bitcoin: "#38BDF8",
+        burnt: "#8B5CF6",
+        gold: "#FBBF24",
+        signal: "#22D3EE",
+        nebula: "#312E81",
+        plasma: "#A78BFA",
       },
       fontFamily: {
         heading: ["var(--font-heading)", "sans-serif"],
@@ -24,9 +27,10 @@ const config: Config = {
         mono: ["var(--font-mono)", "monospace"],
       },
       boxShadow: {
-        orange: "0 0 30px -5px rgba(247,147,26,0.6)",
-        gold: "0 0 20px rgba(255,214,0,0.3)",
-        card: "0 0 50px -10px rgba(247,147,26,0.1)",
+        orange: "0 0 30px -8px rgba(34,211,238,0.55)",
+        gold: "0 0 22px rgba(167,139,250,0.26)",
+        card: "0 0 54px -18px rgba(56,189,248,0.18)",
+        signal: "0 0 34px -10px rgba(34,211,238,0.5)",
       },
       keyframes: {
         float: {
@@ -36,10 +40,35 @@ const config: Config = {
         orbitReverse: {
           to: { transform: "rotate(-360deg)" },
         },
+        starDrift: {
+          "0%": { transform: "translate3d(0, 0, 0)", backgroundPosition: "0 0, 38px 64px, 120px 40px, 84px 130px" },
+          "100%": { transform: "translate3d(-18px, 12px, 0)", backgroundPosition: "42px 26px, 82px 96px, 164px 74px, 126px 158px" },
+        },
+        particleFloat: {
+          "0%, 100%": { transform: "translate3d(0, 0, 0)" },
+          "50%": { transform: "translate3d(10px, -14px, 0)" },
+        },
+        networkPulse: {
+          "0%, 100%": { opacity: "0.14" },
+          "50%": { opacity: "0.28" },
+        },
+        glowBreathe: {
+          "0%, 100%": { opacity: "0.45", transform: "scale(1)" },
+          "50%": { opacity: "0.78", transform: "scale(1.08)" },
+        },
+        nodePingSlow: {
+          "0%, 100%": { opacity: "0.55", transform: "scale(1)" },
+          "50%": { opacity: "1", transform: "scale(1.35)" },
+        },
       },
       animation: {
         float: "float 8s ease-in-out infinite",
         "spin-reverse": "orbitReverse 15s linear infinite",
+        "star-drift": "starDrift 15s ease-in-out infinite alternate",
+        "particle-float": "particleFloat 11s ease-in-out infinite",
+        "network-pulse": "networkPulse 13s ease-in-out infinite",
+        "glow-breathe": "glowBreathe 12s ease-in-out infinite",
+        "node-ping-slow": "nodePingSlow 10s ease-in-out infinite",
       },
     },
   },

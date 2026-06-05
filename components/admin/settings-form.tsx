@@ -55,16 +55,16 @@ export function SettingsForm({ setting }: { setting: Setting }) {
 
   return (
     <form onSubmit={submit} className="space-y-6">
-      <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/30 p-5">
+      <label className="sci-panel flex items-center justify-between gap-4 rounded-2xl border border-white/10 p-5">
         <span>
           <span className="block font-heading text-lg font-semibold text-white md:text-xl">开启留言</span>
-          <span className="mt-1 block text-sm text-stardust">关闭后前台展示暂未开放动画，API 也会拒绝提交。</span>
+          <span className="mt-1 block text-sm text-stardust">关闭后前台展示暂未开放动画，API 也会拒绝提交新信号。</span>
         </span>
         <input
           type="checkbox"
           checked={messageEnabled}
           onChange={(event) => setMessageEnabled(event.target.checked)}
-          className="h-6 w-6 accent-bitcoin"
+          className="h-6 w-6 accent-signal"
         />
       </label>
 
@@ -78,7 +78,7 @@ export function SettingsForm({ setting }: { setting: Setting }) {
         <Textarea value={closedNotice} onChange={(event) => setClosedNotice(event.target.value)} maxLength={200} />
       </label>
 
-      {status ? <p className="text-sm text-bitcoin">{status}</p> : null}
+      {status ? <p className="text-sm text-signal">{status}</p> : null}
       <Button type="submit" disabled={loading}>{loading ? "保存中..." : "保存设置"}</Button>
     </form>
   );

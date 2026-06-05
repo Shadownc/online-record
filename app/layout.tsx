@@ -22,7 +22,7 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_SITE_NAME ?? "Online Record",
-  description: "A Bitcoin DeFi styled online message board.",
+  description: "一个星际粒子网络风格的在线留言墙。",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

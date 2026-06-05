@@ -18,11 +18,11 @@ export default async function MessagesPage() {
   return (
     <AdminShell>
       <div className="space-y-6">
-        <Card className="holographic-gradient">
-          <Badge>Message Ledger</Badge>
+        <Card>
+          <Badge>Signal Ledger</Badge>
           <h2 className="mt-4 font-heading text-3xl font-bold text-white">留言管理</h2>
           <p className="mt-3 max-w-2xl text-stardust">
-            查看访客用户名、IP、浏览器信息和留言内容。默认软删除，方便上线后审计和恢复判断。
+            查看访客用户名、IP、浏览器信息和留言内容。默认软删除，方便上线后审计、恢复与信号节点管理。
           </p>
         </Card>
         <MessageTable messages={messages} />

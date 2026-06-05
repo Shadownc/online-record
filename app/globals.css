@@ -4,14 +4,17 @@
 
 :root {
   color-scheme: dark;
-  --background: #030304;
-  --surface: #0F1115;
-  --foreground: #FFFFFF;
-  --muted: #94A3B8;
-  --border: #1E293B;
-  --bitcoin: #F7931A;
-  --burnt: #EA580C;
-  --gold: #FFD600;
+  --background: #02040a;
+  --surface: #07111f;
+  --foreground: #f8fbff;
+  --muted: #94a3b8;
+  --border: #1e3a5f;
+  --bitcoin: #38bdf8;
+  --burnt: #8b5cf6;
+  --gold: #fbbf24;
+  --signal: #22d3ee;
+  --nebula: #312e81;
+  --plasma: #a78bfa;
 }
 
 * {
@@ -30,15 +33,15 @@ body {
 }
 
 ::selection {
-  background: rgba(247, 147, 26, 0.35);
+  background: rgba(34, 211, 238, 0.34);
   color: #fff;
 }
 
 .bg-grid-pattern {
   background-size: 50px 50px;
   background-image:
-    linear-gradient(to right, rgba(30, 41, 59, 0.5) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(30, 41, 59, 0.5) 1px, transparent 1px);
+    linear-gradient(to right, rgba(56, 189, 248, 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(139, 92, 246, 0.14) 1px, transparent 1px);
   mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
 }
 
@@ -46,25 +49,69 @@ body {
   background-image: url("https://www.transparenttextures.com/patterns/cubes.png");
 }
 
-.holographic-gradient {
+.sci-background {
   background:
-    radial-gradient(circle at top left, rgba(247, 147, 26, 0.16), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(255, 214, 0, 0.08), transparent 35%),
-    rgba(255, 255, 255, 0.05);
+    radial-gradient(circle at 18% 18%, rgba(34, 211, 238, 0.16), transparent 28%),
+    radial-gradient(circle at 78% 12%, rgba(167, 139, 250, 0.14), transparent 30%),
+    radial-gradient(circle at 50% 92%, rgba(251, 191, 36, 0.08), transparent 36%),
+    linear-gradient(135deg, #02040a 0%, #050816 46%, #07111f 100%);
 }
 
-.focus-ring {
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bitcoin focus-visible:ring-offset-2 focus-visible:ring-offset-void;
+.particle-field {
+  background-image:
+    radial-gradient(circle, rgba(248, 251, 255, 0.58) 1px, transparent 2px),
+    radial-gradient(circle, rgba(56, 189, 248, 0.38) 2px, transparent 4px),
+    radial-gradient(circle, rgba(167, 139, 250, 0.28) 3px, transparent 6px),
+    radial-gradient(circle, rgba(251, 191, 36, 0.22) 1px, transparent 3px);
+  background-position: 0 0, 38px 64px, 120px 40px, 84px 130px;
+  background-size: 150px 150px, 230px 230px, 310px 310px, 190px 190px;
+  mix-blend-mode: screen;
+}
+
+.network-lines {
+  background-image:
+    linear-gradient(115deg, transparent 0 35%, rgba(56, 189, 248, 0.18) 35.2%, transparent 35.7% 100%),
+    linear-gradient(64deg, transparent 0 42%, rgba(167, 139, 250, 0.14) 42.2%, transparent 42.8% 100%),
+    linear-gradient(to right, rgba(56, 189, 248, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(167, 139, 250, 0.07) 1px, transparent 1px);
+  background-size: 260px 260px, 340px 340px, 86px 86px, 86px 86px;
+  mask-image: radial-gradient(circle at center, black 28%, transparent 88%);
+}
+
+.holographic-gradient,
+.sci-panel {
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.14), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.13), transparent 36%),
+    rgba(5, 8, 18, 0.74);
+}
+
+.sci-border {
+  border-color: rgba(125, 211, 252, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 42px -24px rgba(56, 189, 248, 0.7);
+}
+
+.glow-node {
+  box-shadow:
+    0 0 18px rgba(34, 211, 238, 0.7),
+    0 0 42px rgba(139, 92, 246, 0.26);
+}
+
+.focus-ring,
+.sci-focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal focus-visible:ring-offset-2 focus-visible:ring-offset-void;
 }
 
 .epr-main {
-  --epr-bg-color: #08090c !important;
-  --epr-category-label-bg-color: #08090c !important;
+  --epr-bg-color: #050812 !important;
+  --epr-category-label-bg-color: #050812 !important;
   --epr-text-color: #ffffff !important;
   --epr-search-input-bg-color: rgba(255, 255, 255, 0.06) !important;
-  --epr-search-input-bg-color-active: rgba(247, 147, 26, 0.12) !important;
-  --epr-highlight-color: #f7931a !important;
-  --epr-hover-bg-color: rgba(247, 147, 26, 0.14) !important;
+  --epr-search-input-bg-color-active: rgba(34, 211, 238, 0.12) !important;
+  --epr-highlight-color: #22d3ee !important;
+  --epr-hover-bg-color: rgba(56, 189, 248, 0.14) !important;
   border: 0 !important;
   font-family: var(--font-body), sans-serif !important;
 }
@@ -81,5 +128,10 @@ body {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .particle-field,
+  .network-lines {
+    background-position: 0 0 !important;
   }
 }

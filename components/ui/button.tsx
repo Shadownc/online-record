@@ -8,11 +8,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-gradient-to-r from-burnt to-bitcoin text-white shadow-[0_0_20px_-5px_rgba(234,88,12,0.5)] hover:scale-105 hover:shadow-orange",
+          "bg-gradient-to-r from-signal via-cyan-300 to-plasma text-white shadow-[0_0_22px_-6px_rgba(34,211,238,0.58)] hover:scale-[1.03] hover:shadow-signal",
         outline:
-          "border-2 border-white/20 bg-transparent text-white hover:border-white hover:bg-white/10",
-        ghost: "text-white hover:bg-white/10 hover:text-bitcoin",
-        link: "min-h-0 rounded-none px-0 py-0 text-bitcoin underline-offset-4 hover:underline",
+          "border-2 border-signal/25 bg-signal/5 text-white hover:border-signal/55 hover:bg-signal/10 hover:text-signal",
+        ghost: "text-white hover:bg-signal/10 hover:text-signal",
+        link: "min-h-0 rounded-none px-0 py-0 text-signal underline-offset-4 hover:underline",
         danger: "border border-red-500/40 bg-red-500/10 text-red-100 hover:border-red-400 hover:bg-red-500/20",
       },
       size: {

@@ -43,7 +43,7 @@ export default async function AdminPage() {
         <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat) => (
             <Card key={stat.label} className="relative overflow-hidden">
-              <stat.icon className="absolute -right-4 -top-4 h-20 w-20 text-bitcoin/10" aria-hidden />
+              <stat.icon className="absolute -right-4 -top-4 h-20 w-20 text-signal/10" aria-hidden />
               <p className="font-mono text-xs uppercase tracking-widest text-stardust">{stat.label}</p>
               <p className="mt-3 font-heading text-4xl font-bold text-white">{stat.value}</p>
             </Card>
@@ -52,7 +52,7 @@ export default async function AdminPage() {
 
         <section className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
           <Card>
-            <Badge live>Recent blocks</Badge>
+            <Badge live>Recent signals</Badge>
             <h2 className="mt-4 font-heading text-2xl font-semibold text-white">最近留言</h2>
             <div className="mt-6 space-y-4">
               {recentMessages.map((message) => (
@@ -75,7 +75,7 @@ export default async function AdminPage() {
               {topIps.map((item) => (
                 <div key={item.ip} className="flex items-center justify-between rounded-xl border border-white/10 bg-black/30 px-4 py-3">
                   <span className="font-mono text-xs text-stardust">{item.ip}</span>
-                  <span className="font-mono text-sm text-bitcoin">{item._count.ip}</span>
+                  <span className="font-mono text-sm text-signal">{item._count.ip}</span>
                 </div>
               ))}
               {!topIps.length ? <p className="text-stardust">暂无 IP 数据。</p> : null}

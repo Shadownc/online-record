@@ -63,14 +63,14 @@ export function DateTimePicker({ label, value, onChange }: { label: string; valu
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="flex min-h-12 w-full items-center justify-between rounded-xl border border-white/10 bg-black/50 px-4 text-left text-sm text-white transition hover:border-bitcoin/50 focus-ring"
+        className="flex min-h-12 w-full items-center justify-between rounded-xl border border-white/10 bg-[#030712]/70 px-4 text-left text-sm text-white transition hover:border-signal/50 focus-ring"
       >
         <span>{display}</span>
-        <Calendar className="h-4 w-4 text-bitcoin" aria-hidden />
+        <Calendar className="h-4 w-4 text-signal" aria-hidden />
       </button>
 
       {open ? (
-        <div className="absolute z-30 mt-3 w-full min-w-[320px] rounded-2xl border border-white/10 bg-[#08090c]/95 p-4 shadow-[0_0_50px_-12px_rgba(247,147,26,0.35)] backdrop-blur-xl">
+        <div className="sci-panel sci-border absolute z-30 mt-3 w-full min-w-[320px] rounded-2xl border p-4 shadow-card backdrop-blur-xl">
           <div className="mb-4 flex items-center justify-between">
             <button type="button" className="rounded-full border border-white/10 px-3 py-1 text-sm text-stardust hover:text-white focus-ring" onClick={() => setView(new Date(view.getFullYear(), view.getMonth() - 1, 1))}>
               上月
@@ -98,7 +98,7 @@ export function DateTimePicker({ label, value, onChange }: { label: string; valu
                   className={cn(
                     "h-9 rounded-lg font-mono text-xs transition focus-ring",
                     isCurrentMonth ? "text-white" : "text-white/30",
-                    isSelected ? "bg-gradient-to-r from-burnt to-bitcoin text-white shadow-[0_0_18px_-5px_rgba(247,147,26,0.7)]" : "hover:bg-white/10 hover:text-bitcoin",
+                    isSelected ? "bg-gradient-to-r from-signal to-plasma text-white shadow-[0_0_18px_-5px_rgba(34,211,238,0.7)]" : "hover:bg-signal/10 hover:text-signal",
                   )}
                 >
                   {day.getDate()}
@@ -107,8 +107,8 @@ export function DateTimePicker({ label, value, onChange }: { label: string; valu
             })}
           </div>
 
-          <div className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-black/40 p-3">
-            <Clock className="h-4 w-4 text-bitcoin" aria-hidden />
+          <div className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-[#030712]/70 p-3">
+            <Clock className="h-4 w-4 text-signal" aria-hidden />
             <select className="h-10 flex-1 rounded-lg border border-white/10 bg-black px-3 text-sm text-white focus-ring" value={selected ? selected.getHours() : 0} onChange={(event) => setTime("hour", event.target.value)}>
               {Array.from({ length: 24 }, (_, hour) => <option key={hour} value={hour}>{pad(hour)} 时</option>)}
             </select>

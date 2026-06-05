@@ -28,11 +28,11 @@ export function MessageTable({ messages }: { messages: Message[] }) {
   }
 
   if (!messages.length) {
-    return <p className="rounded-2xl border border-white/10 bg-black/30 p-8 text-center text-stardust">暂无留言。</p>;
+    return <p className="sci-panel rounded-2xl border border-white/10 p-8 text-center text-stardust">暂无留言。</p>;
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/40 backdrop-blur-lg">
+    <div className="sci-panel overflow-hidden rounded-2xl border border-white/10 backdrop-blur-lg">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-white/10 text-left text-sm">
           <thead className="bg-white/[0.03] font-mono text-xs uppercase tracking-widest text-stardust">
@@ -49,7 +49,7 @@ export function MessageTable({ messages }: { messages: Message[] }) {
               <tr key={message.id} className="align-top transition-colors hover:bg-white/[0.03]">
                 <td className="px-5 py-4">
                   <p className="font-heading font-semibold text-white">{message.username}</p>
-                  <p className={message.visible ? "mt-1 font-mono text-xs text-bitcoin" : "mt-1 font-mono text-xs text-red-300"}>
+                  <p className={message.visible ? "mt-1 font-mono text-xs text-signal" : "mt-1 font-mono text-xs text-red-300"}>
                     {message.visible ? "VISIBLE" : "HIDDEN"}
                   </p>
                 </td>

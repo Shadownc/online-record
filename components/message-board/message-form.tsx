@@ -64,8 +64,8 @@ export function MessageForm({ username, onCreated }: { username: string; onCreat
       <form onSubmit={submitMessage} className="space-y-4">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-widest text-bitcoin">Broadcast wish</p>
-            <h2 className="mt-2 font-heading text-xl font-semibold text-white md:text-2xl">写一张许愿便利贴</h2>
+            <p className="font-mono text-[11px] uppercase tracking-widest text-signal">Broadcast signal</p>
+            <h2 className="mt-2 font-heading text-xl font-semibold text-white md:text-2xl">写入一枚信号节点</h2>
           </div>
           <p className="font-mono text-xs text-stardust">{content.length}/800</p>
         </div>
@@ -73,24 +73,24 @@ export function MessageForm({ username, onCreated }: { username: string; onCreat
           value={content}
           maxLength={800}
           onChange={(event) => setContent(event.target.value)}
-          placeholder="写下你的愿望或留言，可以点下面的 emoji ✨🔥₿"
+          placeholder="写下你的愿望或留言，可以点下面的 emoji ✨🌌🚀"
           aria-label="留言内容"
         />
 
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/30 p-3">
+        <div className="overflow-hidden rounded-2xl border border-signal/15 bg-[#030712]/50 p-3">
           <button
             type="button"
             onClick={() => setEmojiOpen((current) => !current)}
-            className="flex w-full items-center justify-between rounded-xl px-2 py-2 text-sm text-white transition hover:bg-white/5 focus-ring"
+            className="flex w-full items-center justify-between rounded-xl px-2 py-2 text-sm text-white transition hover:bg-signal/10 focus-ring"
           >
             <span className="inline-flex items-center gap-2">
-              <SmilePlus className="h-4 w-4 text-bitcoin" aria-hidden />
+              <SmilePlus className="h-4 w-4 text-signal" aria-hidden />
               选择 emoji 表情
             </span>
             <span className="font-mono text-xs text-stardust">{emojiOpen ? "收起" : "展开"}</span>
           </button>
           {emojiOpen ? (
-            <div className="mt-3 rounded-2xl border border-white/10 bg-[#08090c] p-2 shadow-[0_0_30px_-14px_rgba(247,147,26,0.45)]">
+            <div className="mt-3 rounded-2xl border border-signal/15 bg-[#050812] p-2 shadow-[0_0_30px_-14px_rgba(34,211,238,0.45)]">
               <EmojiPicker
                 onEmojiClick={handleEmojiClick}
                 theme={Theme.DARK}
@@ -109,7 +109,7 @@ export function MessageForm({ username, onCreated }: { username: string; onCreat
         {error ? <p className="text-sm text-red-300">{error}</p> : null}
         <Button type="submit" disabled={loading || !username}>
           <Send className="h-4 w-4" aria-hidden />
-          {loading ? "正在广播..." : "贴到许愿墙"}
+          {loading ? "正在广播..." : "发送到星际网络"}
         </Button>
       </form>
     </GlassCard>

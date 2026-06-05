@@ -5,7 +5,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   return (
     <div
       className={cn(
-        "rounded-2xl border border-white/10 bg-surface p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-bitcoin/50 hover:shadow-[0_0_30px_-10px_rgba(247,147,26,0.2)]",
+        "sci-panel sci-border rounded-2xl border p-6 shadow-card backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-signal/45 hover:shadow-signal",
         className,
       )}
       {...props}
@@ -14,5 +14,5 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 }
 
 export function GlassCard({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("rounded-2xl border border-white/10 bg-black/40 p-6 shadow-card backdrop-blur-lg", className)} {...props} />;
+  return <div className={cn("sci-panel sci-border rounded-2xl border p-6 shadow-card backdrop-blur-xl", className)} {...props} />;
 }
