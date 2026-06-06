@@ -37,6 +37,39 @@ body {
   color: #fff;
 }
 
+.os-theme-online-record {
+  --os-size: 10px;
+  --os-padding-perpendicular: 2px;
+  --os-padding-axis: 2px;
+  --os-track-border-radius: 999px;
+  --os-track-bg: rgba(2, 4, 10, 0.42);
+  --os-track-bg-hover: rgba(34, 211, 238, 0.08);
+  --os-track-bg-active: rgba(167, 139, 250, 0.1);
+  --os-handle-border-radius: 999px;
+  --os-handle-bg: linear-gradient(180deg, rgba(34, 211, 238, 0.88), rgba(167, 139, 250, 0.72));
+  --os-handle-bg-hover: linear-gradient(180deg, rgba(125, 211, 252, 0.98), rgba(196, 181, 253, 0.88));
+  --os-handle-bg-active: linear-gradient(180deg, rgba(103, 232, 249, 1), rgba(216, 180, 254, 0.96));
+  --os-handle-min-size: 42px;
+  --os-handle-perpendicular-size: 100%;
+  --os-handle-perpendicular-size-hover: 100%;
+  --os-handle-perpendicular-size-active: 100%;
+  --os-handle-interactive-area-offset: 4px;
+}
+
+.os-theme-online-record .os-scrollbar-track {
+  box-shadow: inset 0 0 12px rgba(34, 211, 238, 0.08);
+}
+
+.os-theme-online-record .os-scrollbar-handle {
+  box-shadow:
+    inset 0 0 10px rgba(255, 255, 255, 0.16),
+    0 0 16px rgba(34, 211, 238, 0.22);
+}
+
+.scrollbar-host {
+  min-width: 0;
+}
+
 .bg-grid-pattern {
   background-size: 50px 50px;
   background-image:

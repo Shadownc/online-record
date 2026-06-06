@@ -13,13 +13,6 @@ import { UsernameGate } from "@/components/message-board/username-gate";
 
 type SettingState = { isOpen: boolean; closedNotice: string };
 
-const floatingNotes = [
-  { text: "NODE: WISH", className: "left-6 top-28 hidden border-signal/30 bg-signal/10 text-signal lg:block" },
-  { text: "SIGNAL: EMOJI", className: "right-10 top-36 hidden border-plasma/30 bg-plasma/10 text-plasma lg:block" },
-  { text: "TRACE: IP", className: "bottom-28 left-12 hidden border-white/15 bg-white/5 text-stardust xl:block" },
-  { text: "MESH: WALL", className: "bottom-40 right-16 hidden border-gold/30 bg-gold/10 text-gold xl:block" },
-];
-
 export default function HomePage() {
   const [username, setUsername] = useState("");
   const [messages, setMessages] = useState<PublicMessage[]>([]);
@@ -43,17 +36,6 @@ export default function HomePage() {
     <main className="relative min-h-screen overflow-hidden bg-void text-white">
       <SciFiBackground variant="public" density="high" />
 
-      {floatingNotes.map((note) => (
-        <div
-          key={note.text}
-          className={`pointer-events-none absolute z-10 animate-float rounded-2xl border px-4 py-3 font-mono text-xs uppercase tracking-widest shadow-card backdrop-blur-md ${note.className}`}
-          aria-hidden
-        >
-          <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-current glow-node" />
-          {note.text}
-        </div>
-      ))}
-
       <section className="relative z-10 mx-auto max-w-6xl px-6 py-8 md:px-8 md:py-14">
         <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
           <div className="sci-panel sci-border relative overflow-hidden rounded-3xl border p-5 shadow-card backdrop-blur-lg md:p-7">
@@ -67,7 +49,7 @@ export default function HomePage() {
                   <span className="bg-gradient-to-r from-signal via-cyan-200 to-plasma bg-clip-text text-transparent"> 声</span>
                 </h1>
                 <p className="mt-3 max-w-2xl text-sm leading-relaxed text-stardust md:text-base">
-                  首页是一片安静的星际留言网络。点击“去留言”，创建你的信号身份，选择 emoji，把想法发送成一枚漂浮的数据节点。
+                  这里是一片安静可靠的留言空间。点击“去留言”，创建你的信号身份，选择 emoji，把想法温柔地留在这里。
                 </p>
               </div>
               {setting.isOpen ? (

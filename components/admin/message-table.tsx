@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDateTime } from "@/lib/utils";
 
 type Message = {
@@ -33,7 +34,7 @@ export function MessageTable({ messages }: { messages: Message[] }) {
 
   return (
     <div className="sci-panel overflow-hidden rounded-2xl border border-white/10 backdrop-blur-lg">
-      <div className="overflow-x-auto">
+      <ScrollArea>
         <table className="min-w-full divide-y divide-white/10 text-left text-sm">
           <thead className="bg-white/[0.03] font-mono text-xs uppercase tracking-widest text-stardust">
             <tr>
@@ -77,7 +78,7 @@ export function MessageTable({ messages }: { messages: Message[] }) {
             ))}
           </tbody>
         </table>
-      </div>
+      </ScrollArea>
     </div>
   );
 }

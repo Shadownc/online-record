@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { AppScrollbars } from "@/components/ui/app-scrollbars";
+import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
 
 const heading = Space_Grotesk({
@@ -28,7 +30,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="zh-CN" className={`${heading.variable} ${body.variable} ${mono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <AppScrollbars />
+        {children}
+      </body>
     </html>
   );
 }
