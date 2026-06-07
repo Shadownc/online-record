@@ -1,0 +1,67 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: online-record-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: online_record
+      MYSQL_USER: online_record
+      MYSQL_PASSWORD: change-this-db-password
+      MYSQL_ROOT_PASSWORD: change-this-root-password
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_NAME: Online Record
+    image: ${DOCKER_IMAGE:-online-record:latest}
+    container_name: online-record-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://online_record:change-this-db-password@mysql:3306/online_record
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: change-me-before-deploy
+      SESSION_SECRET: replace-with-at-least-32-random-characters
+      NEXT_PUBLIC_SITE_NAME: Online Record
+      NODE_ENV: production
+      PORT: 3000
+    ports:
+      - "3000:3000"
+
+  app-init:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_NAME: Online Record
+    image: ${DOCKER_IMAGE:-online-record:latest}
+    profiles:
+      - init
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://online_record:change-this-db-password@mysql:3306/online_record
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: change-me-before-deploy
+      SESSION_SECRET: replace-with-at-least-32-random-characters
+      NEXT_PUBLIC_SITE_NAME: Online Record
+    command: sh -c "npm run db:push && npm run db:seed"
+
+volumes:
+  mysql_data:

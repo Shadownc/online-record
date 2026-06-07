@@ -2,6 +2,8 @@
 
 本项目是一个基于 **Next.js 14 + Prisma + MySQL** 的在线留言系统，适合在宝塔面板中使用 **Node.js 项目 / PM2** 方式部署。
 
+> 如果服务器内存较小，执行 `npm install` 或 `npm run build` 时被系统 `Killed`，推荐改用 Docker 镜像部署，参考 [Docker 部署指南](DOCKER_DEPLOY.md)。
+
 ## 1. 服务器环境要求
 
 建议配置：
