@@ -397,3 +397,34 @@ docker compose logs -f app
 docker compose pull app
 docker compose up -d app
 ```
+
+```
+DATABASE_URL="mysql://online_record:数据库密码@host.docker.internal:3306/online_record"
+ADMIN_USERNAME="admin"
+ADMIN_PASSWORD="你的后台强密码"
+SESSION_SECRET="至少32位随机字符串"
+NEXT_PUBLIC_SITE_NAME="Online Record"
+```
+
+```
+docker run -d --name online-record --restart unless-stopped --add-host=host.docker.internal:host-gateway --env-file /www/wwwroot/online-record/.env -p 3000:3000 你的DockerHub用户名/online-record:latest
+```
+
+## 首次部署还要初始化数据库
+先同步数据库结构：
+```
+docker run --rm --network=host --env-file /www/wwwroot/heartwall.lmyself.top/.env lmyself/online-record:latest npm run db:push
+```
+再创建默认配置和管理员账号：
+```
+docker run --rm --network=host --env-file /www/wwwroot/heartwall.lmyself.top/.env lmyself/online-record:latest npm run db:seed
+```
+然后启动应用：
+```
+docker run -d --network=host --name online-record --restart unless-stopped --env-file /www/wwwroot/heartwall.lmyself.top/.env lmyself/online-record:latest
+```
+
+
+```
+docker run -d -p 7005:7005 --network="host" --name online-record --env-file /www/wwwroot/heartwall.lmyself.top/.env lmyself/online-record:latest
+```
