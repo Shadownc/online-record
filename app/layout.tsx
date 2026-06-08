@@ -22,10 +22,16 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: process.env.NEXT_PUBLIC_SITE_NAME ?? "Online Record",
-  description: "一个星际粒子网络风格的在线留言墙。",
-};
+const siteName = () => process.env.SITE_NAME ?? process.env.NEXT_PUBLIC_SITE_NAME ?? "Online Record";
+
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: siteName(),
+    description: "一个星际粒子网络风格的在线留言墙。",
+  };
+}
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
