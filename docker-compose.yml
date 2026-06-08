@@ -25,7 +25,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_SITE_NAME: Online Record
+        NEXT_PUBLIC_SITE_NAME: ${SITE_NAME:-${NEXT_PUBLIC_SITE_NAME:-Online Record}}
     image: ${DOCKER_IMAGE:-online-record:latest}
     container_name: online-record-app
     restart: unless-stopped
@@ -37,7 +37,8 @@ services:
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: change-me-before-deploy
       SESSION_SECRET: replace-with-at-least-32-random-characters
-      NEXT_PUBLIC_SITE_NAME: Online Record
+      SITE_NAME: ${SITE_NAME:-${NEXT_PUBLIC_SITE_NAME:-Online Record}}
+      NEXT_PUBLIC_SITE_NAME: ${SITE_NAME:-${NEXT_PUBLIC_SITE_NAME:-Online Record}}
       NODE_ENV: production
       PORT: 3000
     ports:
@@ -48,7 +49,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_SITE_NAME: Online Record
+        NEXT_PUBLIC_SITE_NAME: ${SITE_NAME:-${NEXT_PUBLIC_SITE_NAME:-Online Record}}
     image: ${DOCKER_IMAGE:-online-record:latest}
     profiles:
       - init
@@ -60,7 +61,8 @@ services:
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: change-me-before-deploy
       SESSION_SECRET: replace-with-at-least-32-random-characters
-      NEXT_PUBLIC_SITE_NAME: Online Record
+      SITE_NAME: ${SITE_NAME:-${NEXT_PUBLIC_SITE_NAME:-Online Record}}
+      NEXT_PUBLIC_SITE_NAME: ${SITE_NAME:-${NEXT_PUBLIC_SITE_NAME:-Online Record}}
     command: sh -c "npm run db:push && npm run db:seed"
 
 volumes:

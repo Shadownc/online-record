@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 10;
 
 function parsePage(value: string | string[] | undefined) {
   const raw = Array.isArray(value) ? value[0] : value;
