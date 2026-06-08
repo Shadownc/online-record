@@ -1,5 +1,6 @@
-import { MessageSquare, RadioTower } from "lucide-react";
+import { MessageSquare, RadioTower, RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatDateTime } from "@/lib/utils";
 import type { PublicMessage } from "@/components/message-board/message-form";
 
@@ -10,7 +11,13 @@ const signalSkins = [
   "border-gold/25 bg-[linear-gradient(135deg,rgba(251,191,36,0.1),rgba(5,8,18,0.92)_62%)]",
 ];
 
-export function MessageList({ messages }: { messages: PublicMessage[] }) {
+type MessageListProps = {
+  messages: PublicMessage[];
+  onRandomRefresh?: () => void;
+  refreshing?: boolean;
+};
+
+export function MessageList({ messages, onRandomRefresh, refreshing = false }: MessageListProps) {
   if (!messages.length) {
     return (
       <div className="sci-panel sci-border relative overflow-hidden rounded-3xl border border-dashed p-7 text-center shadow-card backdrop-blur-lg">
@@ -25,12 +32,20 @@ export function MessageList({ messages }: { messages: PublicMessage[] }) {
   return (
     <div className="sci-panel sci-border relative rounded-3xl border p-4 shadow-card backdrop-blur-sm md:p-5">
       <div className="pointer-events-none absolute inset-0 network-lines opacity-15" aria-hidden />
-      <div className="relative mb-5 flex items-center justify-between gap-4">
+      <div className="relative mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Badge live>Signal Mesh</Badge>
-          <h2 className="mt-3 font-heading text-xl font-semibold text-white md:text-2xl">星际留言网络</h2>
+          <h2 className="mt-3 font-heading text-xl font-semibold text-white md:text-2xl">神秘网络</h2>
         </div>
-        <p className="hidden font-mono text-xs uppercase tracking-widest text-stardust sm:block">{messages.length} nodes</p>
+        <div className="flex items-center gap-3">
+          <p className="hidden font-mono text-xs uppercase tracking-widest text-stardust sm:block">{messages.length} nodes</p>
+          {onRandomRefresh ? (
+            <Button type="button" variant="outline" size="sm" onClick={onRandomRefresh} disabled={refreshing}>
+              <RefreshCw className={refreshing ? "h-4 w-4 animate-spin" : "h-4 w-4"} aria-hidden />
+              随机刷新
+            </Button>
+          ) : null}
+        </div>
       </div>
       <div className="relative grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {messages.map((message, index) => {

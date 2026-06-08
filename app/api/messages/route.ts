@@ -6,7 +6,18 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { getSiteSetting, isMessageOpen } from "@/lib/settings";
 import { messageCreateSchema } from "@/lib/validators";
 
-export async function GET() {
+const MESSAGE_TAKE = 50;
+
+type PublicMessage = {
+  id: string;
+  username: string;
+  content: string;
+  createdAt: Date;
+};
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const mode = searchParams.get("mode");
   const ip = await getRequestIp();
   const userAgent = await getUserAgent();
   const [setting, bannedIp] = await Promise.all([getSiteSetting(), getBannedIp(ip)]);
@@ -23,21 +34,41 @@ export async function GET() {
 
   if (bannedIp) {
     return NextResponse.json({
-      messages: [],
+      messageCount: 0,
       setting: settingState,
       banned: { ip, message: "当前 IP 已被封禁，无法访问留言区。" },
     });
   }
 
-  const messages = await prisma.message.findMany({
-    where: { visible: true, deletedAt: null },
-    orderBy: { createdAt: "desc" },
-    take: 50,
-    select: { id: true, username: true, content: true, createdAt: true },
-  });
+  const messageCount = await prisma.message.count({ where: { visible: true, deletedAt: null } });
+
+  if (!settingState.isOpen) {
+    return NextResponse.json({
+      messageCount,
+      setting: settingState,
+      banned: null,
+    });
+  }
+
+  const messages =
+    mode === "random"
+      ? await prisma.$queryRaw<PublicMessage[]>`
+          SELECT id, username, content, createdAt
+          FROM Message
+          WHERE visible = true AND deletedAt IS NULL
+          ORDER BY RAND()
+          LIMIT ${MESSAGE_TAKE}
+        `
+      : await prisma.message.findMany({
+          where: { visible: true, deletedAt: null },
+          orderBy: { createdAt: "desc" },
+          take: MESSAGE_TAKE,
+          select: { id: true, username: true, content: true, createdAt: true },
+        });
 
   return NextResponse.json({
     messages,
+    messageCount,
     setting: settingState,
     banned: null,
   });

@@ -18,15 +18,18 @@ type BannedState = { ip: string | null; message: string } | null;
 export default function HomePage() {
   const [username, setUsername] = useState("");
   const [messages, setMessages] = useState<PublicMessage[]>([]);
+  const [messageCount, setMessageCount] = useState(0);
   const [setting, setSetting] = useState<SettingState>({ isOpen: true, closedNotice: "留言暂未开放" });
   const [banned, setBanned] = useState<BannedState>(null);
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
 
-  const loadMessages = useCallback(async () => {
-    const response = await fetch("/api/messages", { cache: "no-store" });
+  const loadMessages = useCallback(async (mode: "latest" | "random" = "latest") => {
+    setLoading(true);
+    const response = await fetch(`/api/messages${mode === "random" ? "?mode=random" : ""}`, { cache: "no-store" });
     const data = await response.json();
     setMessages(data.messages ?? []);
+    setMessageCount(data.messageCount ?? data.messages?.length ?? 0);
     setSetting(data.setting ?? { isOpen: true, closedNotice: "留言暂未开放" });
     setBanned(data.banned ?? null);
     setLoading(false);
@@ -66,7 +69,7 @@ export default function HomePage() {
             <div className="relative mt-6 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
               <div className="rounded-2xl border border-signal/15 bg-white/[0.035] p-4">
                 <p className="font-mono text-[10px] uppercase tracking-widest text-stardust">Signal nodes</p>
-                <p className="mt-2 font-heading text-2xl font-semibold text-white">{messages.length}</p>
+                <p className="mt-2 font-heading text-2xl font-semibold text-white">{messageCount}</p>
               </div>
               <div className="rounded-2xl border border-signal/15 bg-white/[0.035] p-4">
                 <p className="font-mono text-[10px] uppercase tracking-widest text-stardust">Network status</p>
@@ -93,7 +96,7 @@ export default function HomePage() {
         ) : banned ? (
           <IpBannedPanel ip={banned.ip} message={banned.message} />
         ) : setting.isOpen ? (
-          <MessageList messages={messages} />
+          <MessageList messages={messages} onRandomRefresh={() => loadMessages("random")} refreshing={loading} />
         ) : (
           <ClosedAnimation notice={setting.closedNotice} />
         )}
@@ -112,6 +115,7 @@ export default function HomePage() {
               username={username}
               onCreated={(message) => {
                 setMessages((current) => [message, ...current]);
+                setMessageCount((current) => current + 1);
                 setComposeOpen(false);
               }}
             />
