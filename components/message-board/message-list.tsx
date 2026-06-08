@@ -43,7 +43,7 @@ export function MessageList({ messages }: { messages: PublicMessage[] }) {
               <div className="absolute left-4 top-4 h-2 w-2 rounded-full bg-signal glow-node transition-transform duration-300 group-hover:translate-x-1 group-hover:translate-y-1" aria-hidden />
               <div className="absolute right-5 top-5 h-px w-20 origin-right bg-gradient-to-l from-signal/45 to-transparent opacity-40 transition-opacity group-hover:opacity-80" aria-hidden />
               <div className="absolute bottom-5 left-5 h-px w-16 bg-gradient-to-r from-plasma/35 to-transparent opacity-30 transition-opacity group-hover:opacity-70" aria-hidden />
-              <MessageSquare className="absolute -right-4 -top-4 h-20 w-20 rotate-12 text-white/5 transition-colors group-hover:text-signal/10" aria-hidden />
+              <MessageSquare className="pointer-events-none absolute right-5 top-5 h-11 w-11 rotate-12 text-white/5 transition-colors group-hover:text-signal/10" aria-hidden />
               <div className="relative pt-5">
                 <div className="flex items-start justify-between gap-3">
                   <div>

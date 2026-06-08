@@ -1,7 +1,7 @@
 "use client";
 
+import { Ban, Eye, EyeOff, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDateTime } from "@/lib/utils";
@@ -28,6 +28,29 @@ export function MessageTable({ messages }: { messages: Message[] }) {
     if (response.ok) router.refresh();
   }
 
+  async function banIp(ip: string | null) {
+    if (!ip) return;
+    if (!window.confirm(`确定封禁 IP ${ip} 吗？封禁后该 IP 将无法访问留言区或继续留言。`)) return;
+
+    const response = await fetch("/api/admin/banned-ips", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ip, reason: "后台从留言列表封禁" }),
+    });
+    if (response.ok) router.refresh();
+  }
+
+  async function bulkDelete(body: { ip: string } | { username: string }, label: string) {
+    if (!window.confirm(`确定删除${label}的全部留言吗？该操作会软删除所有匹配留言。`)) return;
+
+    const response = await fetch("/api/admin/messages", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (response.ok) router.refresh();
+  }
+
   if (!messages.length) {
     return <p className="sci-panel rounded-2xl border border-white/10 p-8 text-center text-stardust">暂无留言。</p>;
   }
@@ -35,7 +58,7 @@ export function MessageTable({ messages }: { messages: Message[] }) {
   return (
     <div className="sci-panel overflow-hidden rounded-2xl border border-white/10 backdrop-blur-lg">
       <ScrollArea>
-        <table className="min-w-full divide-y divide-white/10 text-left text-sm">
+        <table className="min-w-full divide-y divide-white/10 text-left text-xs">
           <thead className="bg-white/[0.03] font-mono text-xs uppercase tracking-widest text-stardust">
             <tr>
               <th className="px-5 py-4">用户</th>
@@ -49,7 +72,7 @@ export function MessageTable({ messages }: { messages: Message[] }) {
             {messages.map((message) => (
               <tr key={message.id} className="align-top transition-colors hover:bg-white/[0.03]">
                 <td className="px-5 py-4">
-                  <p className="font-heading font-semibold text-white">{message.username}</p>
+                  <p className="font-heading text-sm font-semibold text-white">{message.username}</p>
                   <p className={message.visible ? "mt-1 font-mono text-xs text-signal" : "mt-1 font-mono text-xs text-red-300"}>
                     {message.visible ? "VISIBLE" : "HIDDEN"}
                   </p>
@@ -71,6 +94,20 @@ export function MessageTable({ messages }: { messages: Message[] }) {
                     <Button type="button" variant="danger" size="sm" onClick={() => updateMessage(message.id, { deleted: true })}>
                       <Trash2 className="h-4 w-4" />
                       删除
+                    </Button>
+                    {message.ip ? (
+                      <>
+                        <Button type="button" variant="danger" size="sm" onClick={() => banIp(message.ip)}>
+                          <Ban className="h-4 w-4" />
+                          封禁 IP
+                        </Button>
+                        <Button type="button" variant="outline" size="sm" onClick={() => bulkDelete({ ip: message.ip! }, ` IP ${message.ip}`)}>
+                          删除此 IP 全部留言
+                        </Button>
+                      </>
+                    ) : null}
+                    <Button type="button" variant="outline" size="sm" onClick={() => bulkDelete({ username: message.username }, `用户 ${message.username}`)}>
+                      删除此用户全部留言
                     </Button>
                   </div>
                 </td>

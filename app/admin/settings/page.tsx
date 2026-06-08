@@ -19,8 +19,8 @@ export default async function SettingsPage() {
           <Badge live={openNow} className={openNow ? undefined : "border-red-400/40 bg-red-500/10 text-red-200"}>
             {openNow ? "Accepting signals" : "Network paused"}
           </Badge>
-          <h2 className="mt-4 font-heading text-3xl font-bold text-white">留言开放设置</h2>
-          <p className="mt-3 leading-relaxed text-stardust">
+          <h2 className="mt-4 font-heading text-2xl font-bold text-white">留言开放设置</h2>
+          <p className="mt-3 text-sm leading-relaxed text-stardust">
             这里控制前台留言窗口。关闭或超出时间段时，前台会展示带轨道动画的暂未开放状态，并且服务端 API 会拒绝新信号。
           </p>
           <div className="mt-8 rounded-2xl border border-white/10 bg-black/30 p-5">

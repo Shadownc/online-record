@@ -31,3 +31,17 @@ export const loginSchema = z.object({
   username: z.string().trim().min(1, "请输入用户名"),
   password: z.string().min(1, "请输入密码"),
 });
+
+export const ipBanCreateSchema = z.object({
+  ip: z.string().trim().min(1, "请输入 IP").max(64, "IP 最多 64 个字符"),
+  reason: z.string().trim().max(255, "封禁原因最多 255 个字符").optional(),
+});
+
+export const messageBulkDeleteSchema = z
+  .object({
+    ip: z.string().trim().min(1, "请输入 IP").max(64, "IP 最多 64 个字符").optional(),
+    username: usernameSchema.optional(),
+  })
+  .refine((value) => Boolean(value.ip) !== Boolean(value.username), {
+    message: "只能选择按 IP 或用户名删除其中一种方式",
+  });

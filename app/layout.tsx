@@ -29,7 +29,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: siteName(),
-    description: "一个星际粒子网络风格的在线留言墙。",
+    description: "要么极致，要么归零。",
   };
 }
 

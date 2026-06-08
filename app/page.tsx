@@ -6,17 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { SciFiBackground } from "@/components/ui/sci-fi-background";
 import { ClosedAnimation } from "@/components/message-board/closed-animation";
+import { IpBannedPanel } from "@/components/message-board/ip-banned-panel";
 import { MessageForm, type PublicMessage } from "@/components/message-board/message-form";
 import { MessageList } from "@/components/message-board/message-list";
 import { VisitorOrb } from "@/components/message-board/visitor-orb";
 import { UsernameGate } from "@/components/message-board/username-gate";
 
 type SettingState = { isOpen: boolean; closedNotice: string };
+type BannedState = { ip: string | null; message: string } | null;
 
 export default function HomePage() {
   const [username, setUsername] = useState("");
   const [messages, setMessages] = useState<PublicMessage[]>([]);
   const [setting, setSetting] = useState<SettingState>({ isOpen: true, closedNotice: "留言暂未开放" });
+  const [banned, setBanned] = useState<BannedState>(null);
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
 
@@ -25,6 +28,7 @@ export default function HomePage() {
     const data = await response.json();
     setMessages(data.messages ?? []);
     setSetting(data.setting ?? { isOpen: true, closedNotice: "留言暂未开放" });
+    setBanned(data.banned ?? null);
     setLoading(false);
   }, []);
 
@@ -52,7 +56,7 @@ export default function HomePage() {
                   这里是一片安静可靠的留言空间。点击“去留言”，创建你的信号身份，选择 emoji，把想法温柔地留在这里。
                 </p>
               </div>
-              {setting.isOpen ? (
+              {!banned && setting.isOpen ? (
                 <Button type="button" size="md" onClick={() => setComposeOpen(true)} className="shrink-0">
                   去留言
                 </Button>
@@ -66,7 +70,9 @@ export default function HomePage() {
               </div>
               <div className="rounded-2xl border border-signal/15 bg-white/[0.035] p-4">
                 <p className="font-mono text-[10px] uppercase tracking-widest text-stardust">Network status</p>
-                <p className="mt-2 font-heading text-lg font-semibold text-signal">{setting.isOpen ? "Online" : "Paused"}</p>
+                <p className={banned ? "mt-2 font-heading text-lg font-semibold text-red-300" : "mt-2 font-heading text-lg font-semibold text-signal"}>
+                  {banned ? "Blocked" : setting.isOpen ? "Online" : "Paused"}
+                </p>
               </div>
               <div className="rounded-2xl border border-signal/15 bg-white/[0.035] p-4">
                 <p className="font-mono text-[10px] uppercase tracking-widest text-stardust">Payload</p>
@@ -84,6 +90,8 @@ export default function HomePage() {
       <section className="relative z-10 mx-auto grid max-w-6xl gap-6 px-6 pb-24 md:px-8">
         {loading ? (
           <div className="sci-panel rounded-2xl border border-white/10 p-8 text-center font-mono text-sm uppercase tracking-widest text-stardust shadow-card backdrop-blur-lg">Loading signal mesh...</div>
+        ) : banned ? (
+          <IpBannedPanel ip={banned.ip} message={banned.message} />
         ) : setting.isOpen ? (
           <MessageList messages={messages} />
         ) : (
@@ -91,7 +99,7 @@ export default function HomePage() {
         )}
       </section>
 
-      {setting.isOpen ? (
+      {!banned && setting.isOpen ? (
         <Modal open={composeOpen} title="发布留言" onClose={() => setComposeOpen(false)}>
           <div className="space-y-5">
             <div className="pr-10">

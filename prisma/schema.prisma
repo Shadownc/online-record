@@ -23,6 +23,16 @@ model Message {
   @@index([visible])
 }
 
+model BannedIp {
+  id        String   @id @default(cuid())
+  ip        String   @unique @db.VarChar(64)
+  reason    String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
 model SiteSetting {
   id              String    @id @default("singleton")
   messageEnabled  Boolean   @default(true)
