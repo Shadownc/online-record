@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Ban, Eye, EyeOff, MessageSquare, MoreVertical, RotateCcw, Trash2, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useToast } from "@/components/ui/toast";
 import { apiFetch } from "@/lib/api-client";
 import { formatDateTime } from "@/lib/utils";
 
@@ -19,11 +21,21 @@ type Message = {
 
 type BulkAction = "hide" | "show" | "delete" | "restore" | "purge";
 
+type ConfirmState = {
+  open: boolean;
+  title: string;
+  message: string;
+  variant?: "danger" | "default";
+  onConfirm: () => void;
+};
+
 export function MessageTable({ messages, deleted = false }: { messages: Message[]; deleted?: boolean }) {
   const router = useRouter();
+  const { toast } = useToast();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkRunning, setBulkRunning] = useState(false);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<ConfirmState>({ open: false, title: "", message: "", onConfirm: () => {} });
 
   function toggle(id: string) {
     setSelected((current) => {
@@ -41,41 +53,70 @@ export function MessageTable({ messages, deleted = false }: { messages: Message[
   }
 
   async function updateMessage(id: string, body: Record<string, unknown>) {
-    await apiFetch(`/api/admin/messages/${id}`, { method: "PATCH", body }).catch(() => null);
-    router.refresh();
+    try {
+      await apiFetch(`/api/admin/messages/${id}`, { method: "PATCH", body });
+      if (body.visible !== undefined) toast(body.visible ? "留言已显示" : "留言已隐藏", "success");
+      else if (body.deleted) toast("留言已移入回收站", "success");
+      else if (body.restore) toast("留言已恢复", "success");
+      router.refresh();
+    } catch {
+      toast("操作失败", "error");
+    }
   }
 
   async function purgeMessage(id: string) {
-    if (!window.confirm("确定永久删除这条留言吗？此操作不可恢复。")) return;
-    await apiFetch(`/api/admin/messages/${id}`, { method: "DELETE" }).catch(() => null);
-    router.refresh();
+    try {
+      await apiFetch(`/api/admin/messages/${id}`, { method: "DELETE" });
+      toast("留言已永久删除", "success");
+      router.refresh();
+    } catch {
+      toast("删除失败", "error");
+    }
   }
 
   async function banIp(ip: string | null) {
     if (!ip) return;
-    if (!window.confirm(`确定封禁 IP ${ip} 吗？封禁后该 IP 将无法访问留言区或继续留言。`)) return;
-
-    await apiFetch("/api/admin/banned-ips", {
-      method: "POST",
-      body: { ip, reason: "后台从留言列表封禁" },
-    }).catch(() => null);
-    router.refresh();
+    try {
+      await apiFetch("/api/admin/banned-ips", { method: "POST", body: { ip, reason: "后台从留言列表封禁" } });
+      toast(`IP ${ip} 已封禁`, "success");
+      router.refresh();
+    } catch {
+      toast("封禁失败", "error");
+    }
   }
 
-  async function bulkDelete(body: { ip: string } | { username: string }, label: string) {
-    if (!window.confirm(`确定删除${label}的全部留言吗？该操作会软删除所有匹配留言。`)) return;
-
-    await apiFetch("/api/admin/messages", { method: "DELETE", body }).catch(() => null);
-    router.refresh();
+  async function bulkDelete(body: { ip: string } | { username: string }) {
+    try {
+      await apiFetch("/api/admin/messages", { method: "DELETE", body });
+      toast("批量删除成功", "success");
+      router.refresh();
+    } catch {
+      toast("批量删除失败", "error");
+    }
   }
 
-  async function runBulk(action: BulkAction, confirmText?: string) {
+  async function bulkPurge(body: { ip: string; deleted: true } | { username: string; deleted: true }) {
+    try {
+      const data = await apiFetch<{ count: number }>("/api/admin/messages/purge", { method: "POST", body });
+      toast(`已永久删除 ${data.count} 条留言`, "success");
+      router.refresh();
+    } catch {
+      toast("永久删除失败", "error");
+    }
+  }
+
+  async function runBulk(action: BulkAction) {
     const ids = [...selected];
     if (!ids.length) return;
-    if (confirmText && !window.confirm(confirmText)) return;
 
     setBulkRunning(true);
-    await apiFetch("/api/admin/messages/bulk", { method: "POST", body: { ids, action } }).catch(() => null);
+    try {
+      await apiFetch("/api/admin/messages/bulk", { method: "POST", body: { ids, action } });
+      const actionMap = { hide: "已隐藏", show: "已显示", delete: "已删除", restore: "已恢复", purge: "已永久删除" };
+      toast(`${ids.length} 条留言${actionMap[action]}`, "success");
+    } catch {
+      toast("批量操作失败", "error");
+    }
     setBulkRunning(false);
     setSelected(new Set());
     router.refresh();
@@ -99,6 +140,18 @@ export function MessageTable({ messages, deleted = false }: { messages: Message[
 
   return (
     <div className="space-y-4">
+      <ConfirmDialog
+        open={confirm.open}
+        title={confirm.title}
+        message={confirm.message}
+        variant={confirm.variant}
+        onConfirm={() => {
+          confirm.onConfirm();
+          setConfirm({ ...confirm, open: false });
+        }}
+        onCancel={() => setConfirm({ ...confirm, open: false })}
+      />
+
       {selectedCount > 0 ? (
         <div className="sci-panel flex flex-col gap-3 rounded-xl border border-signal/40 bg-signal/8 p-4 backdrop-blur-lg sm:flex-row sm:items-center sm:justify-between">
           <p className="font-mono text-sm font-medium uppercase tracking-wider text-signal">已选中 {selectedCount} 条留言</p>
@@ -114,7 +167,15 @@ export function MessageTable({ messages, deleted = false }: { messages: Message[
                   variant="danger"
                   size="sm"
                   disabled={bulkRunning}
-                  onClick={() => runBulk("purge", `确定永久删除选中的 ${selectedCount} 条留言吗？此操作不可恢复。`)}
+                  onClick={() =>
+                    setConfirm({
+                      open: true,
+                      title: "永久删除",
+                      message: `确定永久删除选中的 ${selectedCount} 条留言吗？此操作不可恢复。`,
+                      variant: "danger",
+                      onConfirm: () => runBulk("purge"),
+                    })
+                  }
                 >
                   <XCircle className="h-4 w-4" />
                   永久删除
@@ -135,7 +196,15 @@ export function MessageTable({ messages, deleted = false }: { messages: Message[
                   variant="danger"
                   size="sm"
                   disabled={bulkRunning}
-                  onClick={() => runBulk("delete", `确定删除选中的 ${selectedCount} 条留言吗？将移入回收站。`)}
+                  onClick={() =>
+                    setConfirm({
+                      open: true,
+                      title: "批量删除",
+                      message: `确定删除选中的 ${selectedCount} 条留言吗？将移入回收站。`,
+                      variant: "danger",
+                      onConfirm: () => runBulk("delete"),
+                    })
+                  }
                 >
                   <Trash2 className="h-4 w-4" />
                   批量删除
@@ -206,7 +275,7 @@ export function MessageTable({ messages, deleted = false }: { messages: Message[
                             <RotateCcw className="h-4 w-4" />
                             恢复
                           </Button>
-                          <Button type="button" variant="danger" size="sm" onClick={() => purgeMessage(message.id)} className="hidden sm:inline-flex">
+                          <Button type="button" variant="danger" size="sm" onClick={() => setConfirm({ open: true, title: "永久删除", message: "确定永久删除这条留言吗？此操作不可恢复。", variant: "danger", onConfirm: () => purgeMessage(message.id) })} className="hidden sm:inline-flex">
                             <XCircle className="h-4 w-4" />
                             永久删除
                           </Button>
@@ -217,7 +286,7 @@ export function MessageTable({ messages, deleted = false }: { messages: Message[
                             {message.visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             <span className="hidden lg:inline">{message.visible ? "隐藏" : "显示"}</span>
                           </Button>
-                          <Button type="button" variant="danger" size="sm" onClick={() => updateMessage(message.id, { deleted: true })} className="hidden sm:inline-flex">
+                          <Button type="button" variant="danger" size="sm" onClick={() => setConfirm({ open: true, title: "删除留言", message: "确定删除这条留言吗？将移入回收站。", variant: "danger", onConfirm: () => updateMessage(message.id, { deleted: true }) })} className="hidden sm:inline-flex">
                             <Trash2 className="h-4 w-4" />
                             <span className="hidden lg:inline">删除</span>
                           </Button>
@@ -252,11 +321,56 @@ export function MessageTable({ messages, deleted = false }: { messages: Message[
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() => { purgeMessage(message.id); setMenuOpen(null); }}
+                                    onClick={() => {
+                                      setMenuOpen(null);
+                                      setConfirm({
+                                        open: true,
+                                        title: "永久删除",
+                                        message: "确定永久删除这条留言吗？此操作不可恢复。",
+                                        variant: "danger",
+                                        onConfirm: () => purgeMessage(message.id),
+                                      });
+                                    }}
                                     className="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-300 hover:bg-red-500/10"
                                   >
                                     <XCircle className="h-4 w-4" />
                                     永久删除
+                                  </button>
+                                  {message.ip ? (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setMenuOpen(null);
+                                        setConfirm({
+                                          open: true,
+                                          title: "永久删除",
+                                          message: `确定永久删除回收站中 IP ${message.ip} 的全部留言吗？此操作不可恢复。`,
+                                          variant: "danger",
+                                          onConfirm: () => bulkPurge({ ip: message.ip!, deleted: true }),
+                                        });
+                                      }}
+                                      className="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-300 hover:bg-red-500/10"
+                                    >
+                                      <XCircle className="h-4 w-4" />
+                                      永久删除此 IP 全部
+                                    </button>
+                                  ) : null}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setMenuOpen(null);
+                                      setConfirm({
+                                        open: true,
+                                        title: "永久删除",
+                                        message: `确定永久删除回收站中用户 ${message.username} 的全部留言吗？此操作不可恢复。`,
+                                        variant: "danger",
+                                        onConfirm: () => bulkPurge({ username: message.username, deleted: true }),
+                                      });
+                                    }}
+                                    className="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-300 hover:bg-red-500/10"
+                                  >
+                                    <XCircle className="h-4 w-4" />
+                                    永久删除此用户全部
                                   </button>
                                 </>
                               ) : (
@@ -271,7 +385,16 @@ export function MessageTable({ messages, deleted = false }: { messages: Message[
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() => { updateMessage(message.id, { deleted: true }); setMenuOpen(null); }}
+                                    onClick={() => {
+                                      setMenuOpen(null);
+                                      setConfirm({
+                                        open: true,
+                                        title: "删除留言",
+                                        message: "确定删除这条留言吗？将移入回收站。",
+                                        variant: "danger",
+                                        onConfirm: () => updateMessage(message.id, { deleted: true }),
+                                      });
+                                    }}
                                     className="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-300 hover:bg-red-500/10 sm:hidden"
                                   >
                                     <Trash2 className="h-4 w-4" />
@@ -281,7 +404,16 @@ export function MessageTable({ messages, deleted = false }: { messages: Message[
                                     <>
                                       <button
                                         type="button"
-                                        onClick={() => { banIp(message.ip); setMenuOpen(null); }}
+                                        onClick={() => {
+                                          setMenuOpen(null);
+                                          setConfirm({
+                                            open: true,
+                                            title: "封禁 IP",
+                                            message: `确定封禁 IP ${message.ip} 吗？封禁后该 IP 将无法访问留言区或继续留言。`,
+                                            variant: "danger",
+                                            onConfirm: () => banIp(message.ip),
+                                          });
+                                        }}
                                         className="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-300 hover:bg-red-500/10"
                                       >
                                         <Ban className="h-4 w-4" />
@@ -289,7 +421,16 @@ export function MessageTable({ messages, deleted = false }: { messages: Message[
                                       </button>
                                       <button
                                         type="button"
-                                        onClick={() => { bulkDelete({ ip: message.ip! }, ` IP ${message.ip}`); setMenuOpen(null); }}
+                                        onClick={() => {
+                                          setMenuOpen(null);
+                                          setConfirm({
+                                            open: true,
+                                            title: "批量删除",
+                                            message: `确定删除 IP ${message.ip} 的全部留言吗？该操作会软删除所有匹配留言。`,
+                                            variant: "danger",
+                                            onConfirm: () => bulkDelete({ ip: message.ip! }),
+                                          });
+                                        }}
                                         className="flex w-full items-center gap-3 px-4 py-2 text-sm text-white hover:bg-white/5"
                                       >
                                         <Trash2 className="h-4 w-4" />
@@ -299,7 +440,16 @@ export function MessageTable({ messages, deleted = false }: { messages: Message[
                                   ) : null}
                                   <button
                                     type="button"
-                                    onClick={() => { bulkDelete({ username: message.username }, `用户 ${message.username}`); setMenuOpen(null); }}
+                                    onClick={() => {
+                                      setMenuOpen(null);
+                                      setConfirm({
+                                        open: true,
+                                        title: "批量删除",
+                                        message: `确定删除用户 ${message.username} 的全部留言吗？该操作会软删除所有匹配留言。`,
+                                        variant: "danger",
+                                        onConfirm: () => bulkDelete({ username: message.username }),
+                                      });
+                                    }}
                                     className="flex w-full items-center gap-3 px-4 py-2 text-sm text-white hover:bg-white/5"
                                   >
                                     <Trash2 className="h-4 w-4" />
