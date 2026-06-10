@@ -5,6 +5,7 @@ import { ArrowUpRight, Heart, MessageSquare, Pause, Play, RadioTower, RefreshCw 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { apiFetch } from "@/lib/api-client";
 import { cn, formatDateTime } from "@/lib/utils";
 import type { PublicMessage } from "@/components/message-board/message-form";
@@ -163,19 +164,21 @@ export function MessageList({ messages, onRandomRefresh, refreshing = false, onR
         className="max-w-3xl"
       >
         {selectedMessage ? (
-          <article className="space-y-6 pr-10">
+          <article className="space-y-5 pr-4">
             <div>
               <Badge live>Signal detail</Badge>
               <p className="mt-3 font-mono text-[10px] uppercase tracking-widest text-signal">Node detail</p>
-              <h3 className="mt-2 font-heading text-2xl font-semibold text-white">{selectedMessage.username}</h3>
+              <h3 className="mt-2 font-heading text-lg font-semibold text-white">{selectedMessage.username}</h3>
               <time className="mt-2 block font-mono text-xs text-stardust" dateTime={new Date(selectedMessage.createdAt).toISOString()}>
                 {formatDateTime(selectedMessage.createdAt)}
               </time>
             </div>
 
-            <p className="max-h-[56vh] overflow-y-auto whitespace-pre-wrap break-words pr-2 text-base leading-relaxed text-white/90 md:text-lg">
-              {selectedMessage.content}
-            </p>
+            <ScrollArea className="max-h-[56vh]">
+              <p className="whitespace-pre-wrap break-words pr-2 text-sm leading-relaxed text-white/90">
+                {selectedMessage.content}
+              </p>
+            </ScrollArea>
 
             <div className="flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
               <button

@@ -58,7 +58,7 @@ export default async function MessageDetailPage({ params }: { params: { id: stri
     <main className="relative min-h-screen overflow-hidden bg-void text-white">
       <SciFiBackground variant="public" density="high" />
 
-      <section className="relative z-10 mx-auto max-w-3xl px-6 py-10 md:px-8 md:py-16">
+      <section className="relative z-10 mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
         <Link
           href="/"
           className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-4 py-2 font-mono text-xs text-stardust transition hover:border-signal/40 hover:text-signal focus-ring"
@@ -67,7 +67,7 @@ export default async function MessageDetailPage({ params }: { params: { id: stri
           返回信号网络
         </Link>
 
-        <article className="sci-panel sci-border relative mt-6 overflow-hidden rounded-3xl border p-6 shadow-card backdrop-blur-lg md:p-9">
+        <article className="sci-panel sci-border relative mt-6 overflow-hidden rounded-3xl border p-5 shadow-card backdrop-blur-lg md:p-7">
           <div className="pointer-events-none absolute inset-0 network-lines opacity-15" aria-hidden />
           <div className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full border border-signal/20" aria-hidden />
 
