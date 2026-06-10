@@ -138,7 +138,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* 内容 */}
-        <div className="p-6 md:p-8">{children}</div>
+        <div className="relative z-10 p-6 md:p-8">{children}</div>
       </div>
     </main>
   );
