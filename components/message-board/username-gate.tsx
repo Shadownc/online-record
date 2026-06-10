@@ -14,7 +14,7 @@ export function getStoredUsername() {
   return window.localStorage.getItem(STORAGE_KEY) ?? "";
 }
 
-export function UsernameGate({ onReady }: { onReady: (username: string) => void }) {
+export function UsernameGate({ onReady, maxLength = 24 }: { onReady: (username: string) => void; maxLength?: number }) {
   const [username, setUsername] = useState("");
   const [draft, setDraft] = useState("");
   const [error, setError] = useState("");
@@ -35,8 +35,8 @@ export function UsernameGate({ onReady }: { onReady: (username: string) => void 
       setError("用户名至少 2 个字符");
       return;
     }
-    if (next.length > 24) {
-      setError("用户名最多 24 个字符");
+    if (next.length > maxLength) {
+      setError(`用户名最多 ${maxLength} 个字符`);
       return;
     }
     window.localStorage.setItem(STORAGE_KEY, next);
@@ -73,7 +73,17 @@ export function UsernameGate({ onReady }: { onReady: (username: string) => void 
         </div>
       </div>
       <form onSubmit={saveUsername} className="space-y-4">
-        <Input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="输入你的用户名，例如 Nova" aria-label="用户名" />
+        <Input
+          value={draft}
+          onChange={(event) => {
+            setDraft(event.target.value);
+            if (error) setError("");
+          }}
+          placeholder="输入你的用户名，例如 Nova"
+          aria-label="用户名"
+          aria-invalid={error ? true : undefined}
+          className={error ? "border-red-400/60 focus-visible:border-red-400" : undefined}
+        />
         {error ? <p className="text-sm text-red-300">{error}</p> : null}
         <Button type="submit" className="w-full sm:w-auto">进入留言网络</Button>
       </form>

@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
 import { clearAdminSession } from "@/lib/auth";
+import { ok, route } from "@/lib/api";
 
-export async function POST() {
+export const POST = route(async () => {
   await clearAdminSession();
-  return NextResponse.json({ ok: true });
-}
+  return ok({ ok: true });
+});

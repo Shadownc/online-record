@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,18 @@ export function DateTimePicker({ label, value, onChange }: { label: string; valu
     const base = selected ?? new Date();
     return new Date(base.getFullYear(), base.getMonth(), 1);
   });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
   const days = useMemo(() => {
     const firstDay = new Date(view.getFullYear(), view.getMonth(), 1);
@@ -58,7 +70,7 @@ export function DateTimePicker({ label, value, onChange }: { label: string; valu
     : "不限制";
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <span className="mb-2 block font-mono text-xs uppercase tracking-widest text-stardust">{label}</span>
       <button
         type="button"

@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { ok, route } from "@/lib/api";
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export const DELETE = route<{ params: { id: string } }>(async (_request, { params }) => {
   await requireAdmin();
 
   await prisma.bannedIp.delete({ where: { id: params.id } });
 
-  return NextResponse.json({ ok: true });
-}
+  return ok({ ok: true });
+});

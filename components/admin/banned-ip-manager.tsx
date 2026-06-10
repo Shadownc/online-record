@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { apiFetch } from "@/lib/api-client";
+import { useAsyncAction } from "@/lib/use-async-action";
 import { formatDateTime } from "@/lib/utils";
 
 type BannedIp = {
@@ -17,38 +19,28 @@ export function BannedIpManager({ bannedIps }: { bannedIps: BannedIp[] }) {
   const router = useRouter();
   const [ip, setIp] = useState("");
   const [reason, setReason] = useState("");
-  const [status, setStatus] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  async function submit(event: React.FormEvent<HTMLFormElement>) {
+  const ban = useAsyncAction(
+    () => apiFetch("/api/admin/banned-ips", { method: "POST", body: { ip, reason: reason || undefined } }),
+    {
+      successMessage: "IP 已封禁",
+      onSuccess: () => {
+        setIp("");
+        setReason("");
+        router.refresh();
+      },
+    },
+  );
+
+  function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setLoading(true);
-    setStatus("");
-
-    try {
-      const response = await fetch("/api/admin/banned-ips", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ip, reason: reason || undefined }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error ?? "封禁失败");
-      setIp("");
-      setReason("");
-      setStatus("IP 已封禁");
-      router.refresh();
-    } catch (err) {
-      setStatus(err instanceof Error ? err.message : "封禁失败");
-    } finally {
-      setLoading(false);
-    }
+    void ban.run();
   }
 
   async function removeBan(id: string, targetIp: string) {
     if (!window.confirm(`确定解除 IP ${targetIp} 的封禁吗？`)) return;
-
-    const response = await fetch(`/api/admin/banned-ips/${id}`, { method: "DELETE" });
-    if (response.ok) router.refresh();
+    await apiFetch(`/api/admin/banned-ips/${id}`, { method: "DELETE" }).catch(() => null);
+    router.refresh();
   }
 
   return (
@@ -63,9 +55,10 @@ export function BannedIpManager({ bannedIps }: { bannedIps: BannedIp[] }) {
             <span className="font-mono text-xs uppercase tracking-widest text-stardust">封禁原因</span>
             <Input value={reason} onChange={(event) => setReason(event.target.value)} placeholder="可选" maxLength={255} />
           </label>
-          <Button type="submit" disabled={loading}>{loading ? "封禁中..." : "封禁 IP"}</Button>
+          <Button type="submit" disabled={ban.loading}>{ban.loading ? "封禁中..." : "封禁 IP"}</Button>
         </div>
-        {status ? <p className="mt-4 text-sm text-signal">{status}</p> : null}
+        {ban.status ? <p className="mt-4 text-sm text-signal">{ban.status}</p> : null}
+        {ban.error ? <p className="mt-4 text-sm text-red-300">{ban.error}</p> : null}
       </form>
 
       <div className="sci-panel overflow-hidden rounded-2xl border border-white/10 backdrop-blur-lg">

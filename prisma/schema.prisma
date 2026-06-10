@@ -18,9 +18,23 @@ model Message {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
+  reactions MessageReaction[]
+
   @@index([createdAt])
   @@index([ip])
   @@index([visible])
+}
+
+model MessageReaction {
+  id        String   @id @default(cuid())
+  messageId String
+  ip        String   @db.VarChar(64)
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, ip])
+  @@index([messageId])
 }
 
 model BannedIp {
@@ -40,6 +54,13 @@ model SiteSetting {
   openEndTime     DateTime?
   closedNotice    String    @default("留言暂未开放，链上窗口正在等待下一个区块。") @db.VarChar(200)
   timezone        String    @default("Asia/Shanghai") @db.VarChar(64)
+  // 内容长度与频率策略（可在后台配置）
+  usernameMaxLength Int     @default(24)
+  contentMaxLength  Int     @default(800)
+  rateLimitSeconds  Int     @default(30)
+  // 首页滚动公告
+  announcement        String  @default("") @db.VarChar(300)
+  announcementEnabled Boolean @default(false)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }
@@ -61,4 +82,15 @@ model AdminUser {
   passwordHash String   @db.VarChar(255)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model BlockedWord {
+  id        String   @id @default(cuid())
+  word      String   @unique @db.VarChar(100)
+  // 命中后的处理方式：reject = 直接拒绝发布；hide = 照常入库但 visible=false（进待审核）
+  action    String   @default("reject") @db.VarChar(16)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
 }

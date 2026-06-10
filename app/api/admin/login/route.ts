@@ -1,19 +1,15 @@
-import { NextResponse } from "next/server";
 import { createAdminSession, verifyAdminCredentials } from "@/lib/auth";
+import { ok, parse, readJson, route, ApiError } from "@/lib/api";
 import { loginSchema } from "@/lib/validators";
 
-export async function POST(request: Request) {
-  const body = await request.json().catch(() => null);
-  const parsed = loginSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "登录信息无效" }, { status: 400 });
-  }
+export const POST = route(async (request) => {
+  const data = parse(loginSchema, await readJson(request));
 
-  const admin = await verifyAdminCredentials(parsed.data.username, parsed.data.password);
+  const admin = await verifyAdminCredentials(data.username, data.password);
   if (!admin) {
-    return NextResponse.json({ error: "用户名或密码错误" }, { status: 401 });
+    throw new ApiError("用户名或密码错误", 401);
   }
 
   await createAdminSession(admin.id);
-  return NextResponse.json({ ok: true });
-}
+  return ok({ ok: true });
+});

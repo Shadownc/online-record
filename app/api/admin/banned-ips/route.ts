@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { ok, parse, readJson, route } from "@/lib/api";
 import { ipBanCreateSchema } from "@/lib/validators";
 
-export async function GET() {
+export const GET = route(async () => {
   await requireAdmin();
 
   const bannedIps = await prisma.bannedIp.findMany({
@@ -11,23 +11,19 @@ export async function GET() {
     take: 100,
   });
 
-  return NextResponse.json({ bannedIps });
-}
+  return ok({ bannedIps });
+});
 
-export async function POST(request: Request) {
+export const POST = route(async (request) => {
   await requireAdmin();
 
-  const body = await request.json().catch(() => null);
-  const parsed = ipBanCreateSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "封禁信息无效" }, { status: 400 });
-  }
+  const data = parse(ipBanCreateSchema, await readJson(request));
 
   const bannedIp = await prisma.bannedIp.upsert({
-    where: { ip: parsed.data.ip },
-    create: { ip: parsed.data.ip, reason: parsed.data.reason || null },
-    update: { reason: parsed.data.reason || null },
+    where: { ip: data.ip },
+    create: { ip: data.ip, reason: data.reason || null },
+    update: { reason: data.reason || null },
   });
 
-  return NextResponse.json({ bannedIp }, { status: 201 });
-}
+  return ok({ bannedIp }, 201);
+});

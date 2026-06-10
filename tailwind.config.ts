@@ -60,6 +60,14 @@ const config: Config = {
           "0%, 100%": { opacity: "0.55", transform: "scale(1)" },
           "50%": { opacity: "1", transform: "scale(1.35)" },
         },
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        toastIn: {
+          "0%": { opacity: "0", transform: "translateY(-12px) scale(0.97)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
       },
       animation: {
         float: "float 8s ease-in-out infinite",
@@ -69,6 +77,8 @@ const config: Config = {
         "network-pulse": "networkPulse 13s ease-in-out infinite",
         "glow-breathe": "glowBreathe 12s ease-in-out infinite",
         "node-ping-slow": "nodePingSlow 10s ease-in-out infinite",
+        marquee: "marquee 25s linear infinite",
+        "toast-in": "toastIn 0.3s ease-out",
       },
     },
   },

@@ -1,5 +1,6 @@
 import { BarChart3, Eye, MessageSquare, Network } from "lucide-react";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { PageHeader } from "@/components/admin/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { requireAdmin } from "@/lib/auth";
@@ -39,13 +40,19 @@ export default async function AdminPage() {
 
   return (
     <AdminShell>
-      <div className="space-y-8">
-        <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="space-y-6">
+        <PageHeader
+          badge="Dashboard"
+          title="数据概览"
+          description="实时查看留言统计、访问数据和最近活动。"
+        />
+
+        <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat) => (
             <Card key={stat.label} className="relative overflow-hidden">
-              <stat.icon className="pointer-events-none absolute right-5 top-5 h-12 w-12 text-signal/12" aria-hidden />
-              <p className="font-mono text-[11px] uppercase tracking-widest text-stardust">{stat.label}</p>
-              <p className="mt-2 font-heading text-3xl font-bold text-white">{stat.value}</p>
+              <stat.icon className="pointer-events-none absolute right-6 top-6 h-16 w-16 text-signal/8" aria-hidden />
+              <p className="font-mono text-xs font-medium uppercase tracking-wider text-stardust">{stat.label}</p>
+              <p className="relative mt-3 font-heading text-4xl font-bold text-white">{stat.value}</p>
             </Card>
           ))}
         </section>
@@ -54,9 +61,9 @@ export default async function AdminPage() {
           <Card>
             <Badge live>Recent signals</Badge>
             <h2 className="mt-4 font-heading text-xl font-semibold text-white">最近留言</h2>
-            <div className="mt-6 space-y-4">
+            <div className="mt-6 space-y-3">
               {recentMessages.map((message) => (
-                <div key={message.id} className="rounded-xl border border-white/10 bg-black/30 p-4">
+                <div key={message.id} className="group rounded-xl border border-white/10 bg-black/20 p-4 transition-colors hover:border-white/20 hover:bg-black/30">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <p className="font-heading font-semibold text-white">{message.username}</p>
                     <time className="font-mono text-xs text-stardust">{formatDateTime(message.createdAt)}</time>
@@ -64,23 +71,33 @@ export default async function AdminPage() {
                   <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-stardust">{message.content}</p>
                 </div>
               ))}
-              {!recentMessages.length ? <p className="text-stardust">暂无留言。</p> : null}
+              {!recentMessages.length ? (
+                <p className="rounded-xl border border-dashed border-white/20 bg-white/[0.02] p-8 text-center text-sm text-stardust">
+                  暂无留言
+                </p>
+              ) : null}
             </div>
           </Card>
 
           <Card>
             <Badge>Top IP</Badge>
-            <h2 className="mt-4 font-heading text-xl font-semibold text-white">IP 统计</h2>
-            <div className="mt-6 space-y-3">
+            <h2 className="mt-4 font-heading text-xl font-semibold text-white">活跃 IP</h2>
+            <div className="mt-6 space-y-2">
               {topIps.map((item) => (
-                <div key={item.ip} className="flex items-center justify-between rounded-xl border border-white/10 bg-black/30 px-4 py-3">
+                <div key={item.ip} className="flex items-center justify-between rounded-xl border border-white/10 bg-black/20 px-4 py-3 transition-colors hover:border-white/20 hover:bg-black/30">
                   <span className="font-mono text-xs text-stardust">{item.ip}</span>
-                  <span className="font-mono text-sm text-signal">{item._count.ip}</span>
+                  <span className="rounded-full bg-signal/15 px-3 py-1 font-mono text-sm font-medium text-signal">{item._count.ip}</span>
                 </div>
               ))}
-              {!topIps.length ? <p className="text-stardust">暂无 IP 数据。</p> : null}
+              {!topIps.length ? (
+                <p className="rounded-xl border border-dashed border-white/20 bg-white/[0.02] p-8 text-center text-sm text-stardust">
+                  暂无数据
+                </p>
+              ) : null}
             </div>
-            <p className="mt-5 font-mono text-xs uppercase tracking-widest text-stardust">Visits logged: {totalVisits}</p>
+            <p className="mt-6 font-mono text-xs uppercase tracking-wider text-stardust">
+              Visits logged <span className="text-white">{totalVisits}</span>
+            </p>
           </Card>
         </section>
       </div>

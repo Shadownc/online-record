@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { AppScrollbars } from "@/components/ui/app-scrollbars";
+import { ToastProvider } from "@/components/ui/toast";
 import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
 
@@ -26,6 +27,14 @@ const siteName = () => process.env.SITE_NAME ?? process.env.NEXT_PUBLIC_SITE_NAM
 
 export const dynamic = "force-dynamic";
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // 允许用户缩放（无障碍），但限制最大倍数避免误触双击放大
+  maximumScale: 5,
+  themeColor: "#02040a",
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: siteName(),
@@ -38,7 +47,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="zh-CN" className={`${heading.variable} ${body.variable} ${mono.variable}`}>
       <body>
         <AppScrollbars />
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

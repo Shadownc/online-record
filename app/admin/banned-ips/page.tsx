@@ -1,7 +1,6 @@
 import { AdminShell } from "@/components/admin/admin-shell";
 import { BannedIpManager } from "@/components/admin/banned-ip-manager";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/admin/page-header";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -18,13 +17,12 @@ export default async function BannedIpsPage() {
   return (
     <AdminShell>
       <div className="space-y-6">
-        <Card>
-          <Badge>Access Control</Badge>
-          <h2 className="mt-4 font-heading text-2xl font-bold text-white">封禁 IP 管理</h2>
-          <p className="mt-3 max-w-2xl text-sm text-stardust">
-            管理被禁止访问留言区和提交留言的 IP。被封禁 IP 打开首页时会看到访问受限提示，直接调用留言接口也会被拒绝。
-          </p>
-        </Card>
+        <PageHeader
+          badge="Access Control"
+          title="封禁 IP 管理"
+          description="管理被禁止访问留言区和提交留言的 IP。被封禁 IP 打开首页时会看到访问受限提示，直接调用留言接口也会被拒绝。"
+          stats={[{ label: "Total Banned", value: bannedIps.length }]}
+        />
         <BannedIpManager bannedIps={bannedIps} />
       </div>
     </AdminShell>

@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { ok, route } from "@/lib/api";
 
-export async function GET() {
+export const GET = route(async () => {
   await requireAdmin();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -23,9 +23,9 @@ export async function GET() {
     }),
   ]);
 
-  return NextResponse.json({
+  return ok({
     stats: { totalMessages, visibleMessages, todayMessages, totalVisits, uniqueIps: uniqueIps.length },
     recentMessages,
     topIps,
   });
-}
+});
