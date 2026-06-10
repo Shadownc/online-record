@@ -25,7 +25,7 @@ type ConfirmState = {
   open: boolean;
   title: string;
   message: string;
-  variant?: "danger" | "default";
+  variant?: "danger" | "primary";
   onConfirm: () => void;
 };
 

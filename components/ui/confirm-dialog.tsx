@@ -10,7 +10,7 @@ type ConfirmDialogProps = {
   message: string;
   confirmText?: string;
   cancelText?: string;
-  variant?: "danger" | "default";
+  variant?: "danger" | "primary";
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -21,7 +21,7 @@ export function ConfirmDialog({
   message,
   confirmText = "确认",
   cancelText = "取消",
-  variant = "default",
+  variant = "primary",
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
