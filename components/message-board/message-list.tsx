@@ -113,7 +113,7 @@ export function MessageList({ messages, onRandomRefresh, refreshing = false, onR
                   <span className="rounded-full border border-signal/20 bg-signal/10 px-2 py-1 font-mono text-[10px] text-signal">●</span>
                 </div>
                 <div className="relative mt-4 overflow-hidden">
-                  <p className="line-clamp-[12] whitespace-pre-wrap break-words text-sm leading-relaxed text-white/90">{message.content}</p>
+                  <p className="line-clamp-[12] whitespace-pre-wrap break-all text-sm leading-relaxed text-white/90">{message.content}</p>
                   {message.content.split('\n').length > 12 || message.content.length > 280 ? (
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[#050812] to-transparent" aria-hidden />
                   ) : null}
@@ -175,7 +175,7 @@ export function MessageList({ messages, onRandomRefresh, refreshing = false, onR
             </div>
 
             <ScrollArea className="max-h-[56vh]">
-              <p className="whitespace-pre-wrap break-words pr-2 text-sm leading-relaxed text-white/90">
+              <p className="whitespace-pre-wrap break-all pr-2 text-sm leading-relaxed text-white/90">
                 {selectedMessage.content}
               </p>
             </ScrollArea>
