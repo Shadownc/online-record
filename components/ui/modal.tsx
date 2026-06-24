@@ -40,7 +40,8 @@ export function Modal({
       <div
         className={cn(
           "sci-panel sci-border relative w-full max-w-2xl rounded-2xl border shadow-[0_0_60px_-14px_rgba(34,211,238,0.38)] backdrop-blur-xl",
-          !noScroll && "max-h-[90vh]",
+          // 用 flex 容器 + max-h 限定，让内部 ScrollArea 能拿到具体高度从而触发滚动。
+          !noScroll && "flex max-h-[90vh] flex-col",
           className,
         )}
       >
@@ -58,7 +59,8 @@ export function Modal({
             {children}
           </div>
         ) : (
-          <ScrollArea className="h-full p-5 md:p-6">
+          // flex-1 + min-h-0 让 ScrollArea 占满剩余高度并允许内容超出时滚动。
+          <ScrollArea className="min-h-0 flex-1 p-5 md:p-6">
             <div className="relative pt-6">{children}</div>
           </ScrollArea>
         )}

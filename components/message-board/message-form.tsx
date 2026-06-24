@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import EmojiPicker, { EmojiStyle, Theme, type EmojiClickData } from "emoji-picker-react";
+import { useRef, useState } from "react";
+import type { EmojiClickData } from "emoji-picker-react";
 import { ArrowLeft, Eye, Send, SmilePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { apiFetch } from "@/lib/api-client";
 import { useAsyncAction } from "@/lib/use-async-action";
 import { useToast } from "@/components/ui/toast";
 import { formatDateTime } from "@/lib/utils";
+import { EmojiPickerPopover } from "@/components/message-board/emoji-picker-popover";
 
 export type PublicMessage = {
   id: string;
@@ -35,6 +36,7 @@ export function MessageForm({
   // 字段级错误：内容框专属，显示在框下方并高亮红边。
   const [contentError, setContentError] = useState("");
   const { toast } = useToast();
+  const emojiButtonRef = useRef<HTMLButtonElement>(null);
 
   const submit = useAsyncAction(
     async () => {
@@ -176,6 +178,7 @@ export function MessageForm({
 
         <div className="overflow-hidden rounded-2xl border border-signal/15 bg-[#030712]/50 p-3">
           <button
+            ref={emojiButtonRef}
             type="button"
             onClick={() => setEmojiOpen((current) => !current)}
             className="flex w-full items-center justify-between rounded-xl px-2 py-2 text-sm text-white transition hover:bg-signal/10 focus-ring"
@@ -186,21 +189,12 @@ export function MessageForm({
             </span>
             <span className="font-mono text-xs text-stardust">{emojiOpen ? "收起" : "展开"}</span>
           </button>
-          {emojiOpen ? (
-            <div className="mt-3 rounded-2xl border border-signal/15 bg-[#050812] p-2 shadow-[0_0_30px_-14px_rgba(34,211,238,0.45)]">
-              <EmojiPicker
-                onEmojiClick={handleEmojiClick}
-                theme={Theme.DARK}
-                emojiStyle={EmojiStyle.NATIVE}
-                width="100%"
-                height={360}
-                lazyLoadEmojis
-                searchPlaceHolder="搜索 emoji"
-                previewConfig={{ showPreview: false }}
-                skinTonesDisabled
-              />
-            </div>
-          ) : null}
+          <EmojiPickerPopover
+            open={emojiOpen}
+            anchorRef={emojiButtonRef}
+            onClose={() => setEmojiOpen(false)}
+            onEmojiClick={handleEmojiClick}
+          />
         </div>
 
         {submit.error ? <p className="text-sm text-red-300">{submit.error}</p> : null}

@@ -2,6 +2,83 @@
 
 本文档记录 `online-record` 留言墙项目的重要功能更新与优化。
 
+## 2026-06-24 · Modal 滚动修复与 Emoji 选择器浮层化
+
+### 说明
+
+本次更新解决了留言弹窗的两个体验问题：emoji 展开时内容超出无法滚动，以及 emoji 选择器滚动条未使用统一的 OverlayScrollbars 主题。
+
+---
+
+### Modal 滚动容器修复
+
+**问题**：emoji 展开时内容超出弹窗边界，但弹窗内部无法滚动。
+
+**原因**：Modal 外层用 `max-h-[90vh]` 但未设固定 `height`，内部 ScrollArea 的 `h-full` (CSS `height: 100%`) 在父级 height 为 `auto` 时无法解析出具体值，OverlayScrollbars 检测不到 overflow 就不显示滚动条。
+
+**解决方案**：
+- 外层容器改为 `flex max-h-[90vh] flex-col` 布局
+- ScrollArea 改为 `min-h-0 flex-1`，通过 flex 子元素获得明确高度
+- emoji 展开时内容超出能正常触发滚动
+
+涉及文件：
+- `components/ui/modal.tsx`
+
+---
+
+### Emoji 选择器浮层化
+
+**问题**：原来 emoji 选择器内嵌在表单中，展开时会把整个 MessageForm 卡片撑高，进而撑高 Modal，即便 Modal 能滚动，体验也是"需要滚很长"。
+
+**解决方案**：
+- 新建 `EmojiPickerPopover` 组件，使用 `createPortal` + `position: fixed` 渲染到 `document.body`
+- 浮层定位逻辑：
+  - 默认显示在触发按钮下方
+  - 下方空间不够时自动翻到上方
+  - 监听 `resize` / `scroll` 事件自动更新位置
+  - 点击外部或按 `Esc` 关闭
+- emoji 选择器完全脱离文档流，不占用父级高度
+
+涉及文件：
+- `components/message-board/emoji-picker-popover.tsx` — 新建浮层组件
+- `components/message-board/message-form.tsx` — 替换内嵌 EmojiPicker 为 EmojiPickerPopover
+
+---
+
+### Emoji 选择器滚动条统一为 OverlayScrollbars
+
+**挑战**：emoji-picker-react 内部的分类跳转和搜索定位是直接对 `.epr-body` 元素写 `scrollTop` 实现的。OverlayScrollbars 默认会把 host 设为 `overflow: hidden`，scroll 实际发生在内部生成的 viewport 子节点上，这会让 `scrollTop` 读写失效。
+
+**解决方案**：
+- 使用 OverlayScrollbars 2.x 的 `elements.viewport = target` 模式
+- 配置为 `OverlayScrollbars({ target: body, elements: { viewport: body } }, options)`
+- 让 `.epr-body` 本身就是 viewport，不生成额外子节点
+- scroll 事件和 `scrollTop` 读写仍作用在原 DOM 元素上
+- emoji-picker-react 的分类跳转、搜索定位逻辑不受影响
+- 只接管滚动条 UI，应用 `os-theme-online-record` 主题
+
+**实现细节**：
+- 用 `MutationObserver` 监听 emoji picker 渲染完成
+- 找到 `.epr-body` 元素后初始化 OverlayScrollbars
+- 浮层关闭时销毁 OverlayScrollbars 实例
+- 移除 `app/globals.css` 中给 `.epr-body` 写的 CSS 自定义滚动条样式
+
+涉及文件：
+- `components/message-board/emoji-picker-popover.tsx` — OverlayScrollbars 集成逻辑
+- `app/globals.css` — 清理旧 CSS 滚动条样式
+
+---
+
+### 验证
+
+- ✅ TypeScript 类型检查通过
+- ✅ Modal 内容超出时能正常滚动
+- ✅ Emoji 选择器浮层定位正确，不占用弹窗高度
+- ✅ Emoji 选择器滚动条使用 OverlayScrollbars，视觉与全局一致
+- ✅ 分类跳转和搜索定位功能正常
+
+---
+
 ## 2026-06-10 · 留言详情页优化与分享图美化
 
 ### 留言详情页布局优化
